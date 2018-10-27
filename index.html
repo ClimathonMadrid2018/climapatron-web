@@ -29,6 +29,18 @@ http://www.templatemo.com/tm-517-timeless
     <script src="js/msdropdown/jquery.dd.min.js" type="text/javascript"></script>
     <link rel="stylesheet" type="text/css" href="css/msdropdown/dd.css" />
     <link rel="stylesheet" type="text/css" href="fontello/fontello.css" />
+    
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 400px;
+      }
+    </style>
+    
 </head>
 
 <p class="language"><a href="index_es.html">Español</a></p>
@@ -81,7 +93,7 @@ http://www.templatemo.com/tm-517-timeless
         <div class="row">
             <div class="col-lg-12">
 
-                    <iframe src="map.html"></iframe>
+                    <div id="map"></div>
 
                     
                 
@@ -210,6 +222,129 @@ http://www.templatemo.com/tm-517-timeless
     <script src="js/jquery.min.js"></script>
     <!-- <script src="js/jquery-3.2.1.slim.min.js"></script> -->
     <script src="js/templatemo-script.js"></script>
+    <script>
+      
+    var getJSON = function(url, callback) {
+      var xhr = new XMLHttpRequest();
+      xhr.open("get", url, true);
+      xhr.responseType = "json";
+      xhr.onload = function() {
+        var status = xhr.status;
+        if (status == 200 || status == 202) {
+          callback(null, xhr.response);
+        } else {
+          callback(status);
+        }
+      };
+    xhr.send();
+    };
+
+
+// This example creates circles on the map, representing populations in North
+// America.
+
+
+
+var map = undefined;
+var markers = [];
+var markersInfo = [];
+var observationInfo = [];
+
+var lamppost_icon = './lamp-post.png';
+var no_connection_icon = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+
+
+//setTimeout(updateStatus, 10000);
+
+function initMap(lat, lng, zoom) {
+  if (map != undefined) {
+        return map;
+  }
+  
+  return new google.maps.Map(document.getElementById('map'), {
+        zoom: zoom,
+        center: {lat: lat, lng: lng},
+        mapTypeId: google.maps.MapTypeId.TERRAIN
+  });
+}
+
+/*
+function initStatus(){
+  updateStatus();
+  setInterval(updateStatus, 20000);
+}
+*/
+
+function mapCallback() {
+    map = initMap(40.4731, -3.6896, 3);
+    
+    console.log("Paso");
+    
+    var markers=[];
+    
+    getJSON("http://climathon1.stars4all.eu/sparql?query=select+distinct+*+%7B%0D%0A+++%3Fs+<http%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type>+%3Ftype+.%0D%0A+++%3Fs+<http%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat>+%3Flat+.%0D%0A+++%3Fs+<http%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long>+%3Flong+.%0D%0A+++OPTIONAL+%7B%0D%0A+++%09%09%3Fs2+a+<http%3A%2F%2Fschema.org%2FTweet>+.%0D%0A+++%09%09%3Fs2+<http%3A%2F%2Fwww.schema.org%2Flight-overkill>+%3Fs+.%0D%0A+++%7D%0D%0A%7D%0D%0A",
+    function(err, data) {
+      if (err != null) {
+        alert("Something went wrong: " + err);
+      } else {
+        
+        console.log("Size:"+data.bindings.length);
+        
+        
+        for (var count in data.bindings){
+          
+          json_object = data.bindings[count];
+          
+          //console.log(json_object);
+          
+          
+          var type = json_object.type.value;
+          var lat = json_object.lat.value;
+          var long = json_object.long.value;
+          
+          var icon = null;
+          
+          if (type.includes("Lamppost") || type.includes("LocalBusiness")) {
+            
+            if (type.includes("Lamppost")) {
+              icon = './icons/lamp-post.png';
+            } else if (type.includes("LocalBusiness")) {
+              if (json_object.s2) {
+                icon = './icons/store_red.png';
+              } else {
+                icon = './icons/store.png';
+              }
+            } 
+            
+            var position = {lat:Number(lat),lng:Number(long)};
+           
+            var marker = new google.maps.Marker({
+              position: position,
+              map: map,
+              icon: icon
+            });
+            
+             markers.push(marker);
+            
+          } else {
+            console.log("Other:"+type);
+          }
+          
+        
+        }
+        
+        var markerCluster = new MarkerClusterer(map, markers,
+            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+        
+      }
+    });
+}
+
+    </script>
+    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
+    </script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAoyg3qxPOvfAqXwUfdP0hY_4faF5qOt9Y&signed_in=true&callback=mapCallback"></script>
     <script>
        var mymap = L.map('mapid').setView([51.505, -0.09], 13);
        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
