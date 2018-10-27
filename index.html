@@ -77,7 +77,7 @@ function mapCallback() {
     
     var markers=[];
     
-    getJSON("http://climathon1.stars4all.eu/sparql?query=select+distinct+*+%7B%0D%0A+++%3Fs+<http%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type>+%3Ftype+.%0D%0A+++%3Fs+<http%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat>+%3Flat+.%0D%0A+++%3Fs+<http%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long>+%3Flong+.%0D%0A%7D",
+    getJSON("http://climathon1.stars4all.eu/sparql?query=select+distinct+*+%7B%0D%0A+++%3Fs+<http%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type>+%3Ftype+.%0D%0A+++%3Fs+<http%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat>+%3Flat+.%0D%0A+++%3Fs+<http%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long>+%3Flong+.%0D%0A+++OPTIONAL+%7B%0D%0A+++%09%09%3Fs2+a+<http%3A%2F%2Fschema.org%2FTweet>+.%0D%0A+++%09%09%3Fs2+<http%3A%2F%2Fwww.schema.org%2Flight-overkill>+%3Fs+.%0D%0A+++%7D%0D%0A%7D%0D%0A",
     function(err, data) {
       if (err != null) {
         alert("Something went wrong: " + err);
