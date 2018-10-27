@@ -104,7 +104,12 @@ function mapCallback() {
             if (type.includes("Lamppost")) {
               icon = './icons/lamp-post.png';
             } else if (type.includes("LocalBusiness")) {
-              icon = './icons/store.png';
+              if (json_object.s2) {
+                icon = './icons/store_red.png';
+              } else {
+                icon = './icons/store.png';
+              }
+              
             } 
             
             var position = {lat:Number(lat),lng:Number(long)};
